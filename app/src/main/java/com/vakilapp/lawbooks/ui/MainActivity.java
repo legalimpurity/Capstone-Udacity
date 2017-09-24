@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -22,10 +23,11 @@ import com.vakilapp.lawbooks.loaders.BooksOnlineLoader;
 import com.vakilapp.lawbooks.models.Book;
 import com.vakilapp.lawbooks.provider.DBContract;
 import com.vakilapp.lawbooks.utils.NetworkUtils;
+import com.vakilapp.lawbooks.utils.Snackbarer;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity  implements LoaderManager.LoaderCallbacks {
+public class MainActivity extends AppCompatActivity  implements LoaderManager.LoaderCallbacks, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String SAVED_INSTANCE_MOVIE_LIST = "SAVED_INSTANCE_MOVIE_LIST";
 
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         myRecycler = (RecyclerView) findViewById(R.id.my_recycler);
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         activityMainRoot = (CoordinatorLayout) findViewById(R.id.activity_main_root);
+        swipeContainer.setOnRefreshListener(this);
         setAdapter(this);
         checkForSavedInstanceState(savedInstanceState);
     }
@@ -70,10 +73,38 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
     {
         Bundle queryBundle = new Bundle();
         startLoader(OFFLINE_BOOKS_DATA_LOADER,queryBundle);
+        loadFromApi();
+    }
+
+    private void loadFromApi()
+    {
         if(NetworkUtils.isNetworkAvailable(this)) {
+            Bundle queryBundle = new Bundle();
             queryBundle.putString(BooksOnlineLoader.BBID_PARAM,"NA");
             queryBundle.putSparseParcelableArray(BooksOnlineLoader.OFFLINE_BOOKS_PARAM,booksOffline);
             startLoader(ONLINE_BOOKS_DATA_LOADER, queryBundle);
+            swipeContainer.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeContainer.setRefreshing(true);
+                }
+            });
+        }
+        else
+        {
+            Snackbarer.showMsg(activityMainRoot, R.string.no_internet_error, R.string.retry, new Snackbarer.SnackbarerInterface() {
+                @Override
+                public void onActionOccured() {
+                    loadFromApi();
+                }
+            }, Snackbar.LENGTH_INDEFINITE);
+            swipeContainer.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeContainer.setRefreshing(false);
+                }
+            });
+
         }
     }
 
@@ -152,6 +183,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
             books_list = (ArrayList<Book>) data;
 //            no_internet_text_view.setText(R.string.change_order_zero);
             processLoader();
+            swipeContainer.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeContainer.setRefreshing(false);
+                }
+            });
         }
         else if (loader.getId() == OFFLINE_BOOKS_DATA_LOADER)
         {
@@ -184,5 +221,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
     @Override
     public void onLoaderReset(Loader loader) {
 
+    }
+
+    @Override
+    public void onRefresh() {
+        loadFromApi();
     }
 }
