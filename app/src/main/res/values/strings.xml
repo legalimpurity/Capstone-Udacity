@@ -8,5 +8,8 @@
 
     <string name="chapters">chapters</string>
 
+    <string name="download">DOWNLOAD</string>
+    <string name="update">UPDATE</string>
+    <string name="open">OPEN</string>
 
 </resources>

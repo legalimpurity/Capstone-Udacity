@@ -46,6 +46,5 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:textSize="10sp"
-        android:text="DOWNLOAD"
         android:layout_gravity="center"/>
 </LinearLayout>

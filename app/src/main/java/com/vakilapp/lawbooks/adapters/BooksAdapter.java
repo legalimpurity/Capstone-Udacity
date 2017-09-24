@@ -77,7 +77,23 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookItemHold
             String title = mo.getName();
             initialTextView.setText(title.charAt(0)+"");
             nameTextView.setText(title);
-            noOfChapters.setText(mo.numberOfChapters+" "+act.getResources().getString(R.string.chapters));
+            noOfChapters.setText(mo.getNumberOfChapters()+" "+act.getResources().getString(R.string.chapters));
+
+            int downloadButtonTitle = R.string.download;
+            switch ((int)mo.getDownloaded())
+            {
+                case 0 : downloadButtonTitle = R.string.download;
+                    break;
+                case 1 : downloadButtonTitle = R.string.open;
+                    break;
+                case 2 : downloadButtonTitle = R.string.update;
+                    break;
+                default: downloadButtonTitle = R.string.download;
+                    break;
+            }
+            downloadButton.setText(downloadButtonTitle);
+            if(mo.getDownloaded() == 2)
+                downloadButton.setText(R.string.update);
             downloadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

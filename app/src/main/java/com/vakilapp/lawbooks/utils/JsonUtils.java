@@ -1,8 +1,10 @@
 package com.vakilapp.lawbooks.utils;
 
 import android.content.Context;
+import android.util.SparseArray;
 
 import com.vakilapp.lawbooks.models.Book;
+import com.vakilapp.lawbooks.provider.DBContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 
 public class JsonUtils {
 
-    public static ArrayList<Book> getBookFromJson(Context context, String booksJsonStr)
+    public static ArrayList<Book> getBookFromJson(Context context, String booksJsonStr, SparseArray<Book> offlineSet)
             throws JSONException {
 
         final String PARENT_TAG = "apiResponse";
@@ -33,28 +35,35 @@ public class JsonUtils {
 
         parsedBooksData = new ArrayList<Book>();
 
-//        MovieDbHelper movieDbHelper = new MovieDbHelper(context);
-
-
-//        HashSet<Long> bookmarked_ids = new HashSet<Long>();
-//        // Get all bookmarks
-//        Cursor cursor = movieDbHelper.getReadableDatabase().query(
-//                MoviesContract.MoviesEntry.TABLE_NAME,
-//                new String[]{MoviesContract.MoviesEntry.COLUMN_API_ID},
-//                null,
-//                null,
-//                null,
-//                null,
-//                null);
-//        while (cursor.moveToNext()) {
-//            bookmarked_ids.add(cursor.getLong(MoviesContract.MOVIES_PROJECTION_INDEXES.COLUMN_API_ID_POSITION));
-//        }
-//
         for (int i = 0; i < booksArray.length(); i++) {
             JSONObject bookJSONObj = booksArray.getJSONObject(i);
-            parsedBooksData.add(new Book(bookJSONObj.getInt(BOOK_OBJ_ATTR_ID),
+            Book currentBook = new Book(bookJSONObj.getInt(BOOK_OBJ_ATTR_ID),
                     bookJSONObj.getString(BOOK_OBJ_ATTR_NAME),
-                    bookJSONObj.getInt(BOOK_OBJ_ATTR_VERSION),false,bookJSONObj.getInt(BOOK_OBJ_ATTR_NOOFCHAP)));
+                    bookJSONObj.getInt(BOOK_OBJ_ATTR_VERSION),0,bookJSONObj.getInt(BOOK_OBJ_ATTR_NOOFCHAP));
+
+            int f = offlineSet.indexOfKey((int)currentBook.getId());
+            if(f == -1)
+                context.getContentResolver().insert(DBContract.Books.CONTENT_URI, currentBook.getContentValues());
+            else
+            {
+                Book currentBookOffline = offlineSet.get((int) currentBook.getId());
+                // If book is downloaded
+                if (currentBookOffline.getDownloaded() == 1) {
+                    currentBook.setDownloaded(1);
+                } else {
+                    currentBook.setDownloaded(0);
+                }
+
+                if (currentBookOffline.getVersion() != currentBook.getVersion()) {
+                    if (currentBookOffline.getDownloaded() == 1)
+                        currentBook.setDownloaded(2);
+                    // dont update the version number, just update the download flag
+                    String whereClause = DBContract.Books.TABLE_BOOK_COLUMN_ID+"=?";
+                    String [] whereArgs = {"2"};
+                    context.getContentResolver().update(DBContract.Books.CONTENT_URI, currentBook.getContentValues(),whereClause,whereArgs);
+                }
+            }
+            parsedBooksData.add(currentBook);
         }
 
         return parsedBooksData;

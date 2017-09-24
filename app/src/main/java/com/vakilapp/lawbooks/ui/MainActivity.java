@@ -2,14 +2,17 @@ package com.vakilapp.lawbooks.ui;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.View;
 
 import com.vakilapp.lawbooks.R;
@@ -17,6 +20,7 @@ import com.vakilapp.lawbooks.adapters.BooksAdapter;
 import com.vakilapp.lawbooks.interfaces.BookClickListener;
 import com.vakilapp.lawbooks.loaders.BooksOnlineLoader;
 import com.vakilapp.lawbooks.models.Book;
+import com.vakilapp.lawbooks.provider.DBContract;
 import com.vakilapp.lawbooks.utils.NetworkUtils;
 
 import java.util.ArrayList;
@@ -29,6 +33,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
     private static final int OFFLINE_BOOKS_DATA_LOADER = 23;
 
     private ArrayList<Book> books_list;
+    private SparseArray<Book> booksOffline = new SparseArray<Book>();
 
 
     private RecyclerView myRecycler;
@@ -63,10 +68,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
 
     private void processFlow()
     {
-//        startLoader(OFFLINE_BOOKS_DATA_LOADER);
+        Bundle queryBundle = new Bundle();
+        startLoader(OFFLINE_BOOKS_DATA_LOADER,queryBundle);
         if(NetworkUtils.isNetworkAvailable(this)) {
-            Bundle queryBundle = new Bundle();
             queryBundle.putString(BooksOnlineLoader.BBID_PARAM,"NA");
+            queryBundle.putSparseParcelableArray(BooksOnlineLoader.OFFLINE_BOOKS_PARAM,booksOffline);
             startLoader(ONLINE_BOOKS_DATA_LOADER, queryBundle);
         }
     }
@@ -75,14 +81,13 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
     {
         LoaderManager loaderManager = getSupportLoaderManager();
         Loader booksLoader = loaderManager.getLoader(LOADER_CODE);
-
         if (booksLoader == null) {
             loaderManager.initLoader(LOADER_CODE, queryBundle, this);
         } else {
             loaderManager.restartLoader(LOADER_CODE, queryBundle, this);
         }
+    }
 
-        }
     private void restoreDatafromSavedInstance(Bundle savedInstanceState)
     {
         books_list = savedInstanceState.getParcelableArrayList(SAVED_INSTANCE_MOVIE_LIST);
@@ -129,13 +134,13 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         {
             case ONLINE_BOOKS_DATA_LOADER:
                 return new BooksOnlineLoader(this, args);
-//            case OFFLINE_BOOKS_DATA_LOADER:
-//                return new CursorLoader(this,
-//                        MoviesContract.MoviesEntry.CONTENT_URI,
-//                        MoviesContract.MOVIES_PROJECTION,
-//                        null,
-//                        null,
-//                        null);
+            case OFFLINE_BOOKS_DATA_LOADER:
+                return new CursorLoader(this,
+                        DBContract.Books.CONTENT_URI,
+                        DBContract.BOOK_PROJECTION,
+                        null,
+                        null,
+                        null);
             default:return new BooksOnlineLoader(this, args);
         }
     }
@@ -150,16 +155,16 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         }
         else if (loader.getId() == OFFLINE_BOOKS_DATA_LOADER)
         {
-//            Cursor mCursor = (Cursor) data;
-//            realdata = new ArrayList<MovieObject>();
-//            for(int i = 0; i < mCursor.getCount(); i++)
-//            {
-//                mCursor.moveToPosition(i);
-//                realdata.add(new MovieObject(mCursor));
-//
-//            }
-//            no_internet_text_view.setText(R.string.bookmarks_zero);
-//            movies_list = realdata;
+            Cursor mCursor = (Cursor) data;
+            books_list = new ArrayList<Book>();
+            booksOffline = new SparseArray<Book>();
+            for(int i = 0; i < mCursor.getCount(); i++)
+            {
+                mCursor.moveToPosition(i);
+                Book k = new Book(mCursor);
+                booksOffline.append((int)k.getId(),k);
+                books_list.add(k);
+            }
             processLoader();
         }
     }
@@ -168,7 +173,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
     private void processLoader()
     {
         if (mAdapter!=null)
-           mAdapter.setBooksData(books_list);
+               mAdapter.setBooksData(books_list);
 //        wasDataLoadedPerfectlyForSelectedApiCode = true;
 //        if(movies_list != null && movies_list.size() == 0)
 //            showErrorMessage();
