@@ -74,11 +74,20 @@ public class ChaptersListAdapter extends RecyclerView.Adapter<ChaptersListAdapte
         {
             Chapter chap = chaptersObjs.get(bookPos);
             String title = chap.getChapterName();
-            initialTextView.setText(title.charAt(0)+"");
-            if(TextUtils.isDigitsOnly(title.charAt(0)+""))
+            if(TextUtils.isDigitsOnly(title.substring(0,2)))
+            {
+                initialTextView.setText(title.substring(0, 2) + "");
                 nameTextView.setText(title.substring(3));
+            }
+            else if (TextUtils.isDigitsOnly(title.substring(0,1))) {
+                initialTextView.setText(title.substring(0, 1) + "");
+                nameTextView.setText(title.substring(2));
+            }
             else
+            {
+                initialTextView.setText(title.substring(0, 1) + "");
                 nameTextView.setText(title);
+            }
 
             rootLay.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -86,28 +95,5 @@ public class ChaptersListAdapter extends RecyclerView.Adapter<ChaptersListAdapte
                     clicker.onChapterClicked(bookPos,chaptersObjs,view);
                 }
             });
-//            noOfChapters.setText(chap.getContent().substring(0,10));
-
-//            int downloadButtonTitle = R.string.download;
-//            switch ((int)mo.getDownloaded())
-//            {
-//                case 0 : downloadButtonTitle = R.string.download;
-//                    break;
-//                case 1 : downloadButtonTitle = R.string.open;
-//                    break;
-//                case 2 : downloadButtonTitle = R.string.update;
-//                    break;
-//                default: downloadButtonTitle = R.string.download;
-//                    break;
-//            }
-//            downloadButton.setText(downloadButtonTitle);
-//            if(mo.getDownloaded() == 2)
-//                downloadButton.setText(R.string.update);
-//            downloadButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    clicker.onBookDownAsked(bookPos,view);
-//                }
-//            });
         }
     }}

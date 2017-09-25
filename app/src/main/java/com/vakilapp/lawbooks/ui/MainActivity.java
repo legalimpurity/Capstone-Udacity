@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             numberOfColumns = 1;
         }
         else{
-            numberOfColumns = 3;
+            numberOfColumns = 2;
         }
         RecyclerView.LayoutManager booksLayoutManager = new GridLayoutManager(act,numberOfColumns);
         myRecycler.setLayoutManager(booksLayoutManager);
