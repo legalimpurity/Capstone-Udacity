@@ -32,6 +32,9 @@ import com.vakilapp.lawbooks.utils.Snackbarer;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String SAVED_INSTANCE_BOOKS_LIST = "SAVED_INSTANCE_BOOKS_LIST";
@@ -45,20 +48,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private ArrayList<Book> books_list;
     private SparseArray<Book> booksOffline = new SparseArray<Book>();
 
-
-    private RecyclerView myRecycler;
-    private SwipeRefreshLayout swipeContainer;
-    private CoordinatorLayout activityMainRoot;
+    @BindView(R.id.my_recycler)
+    RecyclerView myRecycler;
+    @BindView(R.id.swipeContainer)
+    SwipeRefreshLayout swipeContainer;
+    @BindView(R.id.activity_main_root)
+    CoordinatorLayout activityMainRoot;
 
     private BooksAdapter mAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        myRecycler = (RecyclerView) findViewById(R.id.my_recycler);
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        activityMainRoot = (CoordinatorLayout) findViewById(R.id.activity_main_root);
         swipeContainer.setOnRefreshListener(this);
         setAdapter(this);
         checkForSavedInstanceState(savedInstanceState);
