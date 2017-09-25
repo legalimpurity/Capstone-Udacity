@@ -45,7 +45,7 @@ public class DBContract
                     TABLE_BOOK_COLUMN_NAME_STRING + " TEXT NOT NULL, " +
                     TABLE_BOOK_COLUMN_VERSION_INT + " LONG NOT NULL, " +
                     TABLE_BOOK_NOOFCHAP + " LONG NOT NULL, " +
-                    TABLE_BOOK_COLUMN_DOWNLOADED_INT + " BOOL NOT NULL " + ")";
+                    TABLE_BOOK_COLUMN_DOWNLOADED_INT + " LONG NOT NULL " + ")";
         }
         public static String getBooksDeleteQuery() {
             return "DROP TABLE IF EXISTS " + TABLE_NAME_BOOK;
@@ -70,7 +70,7 @@ public class DBContract
         public static final int TABLE_BOOK_COLUMN_NAME_STRING = 1;
         public static final int TABLE_BOOK_COLUMN_VERSION_INT = 2;
         public static final int TABLE_BOOK_NOOFCHAP = 3;
-        public static final int TABLE_BOOK_COLUMN_DOWNLOADED_INT = 3;
+        public static final int TABLE_BOOK_COLUMN_DOWNLOADED_INT = 4;
     };
 
     public static abstract class Chapters implements BaseColumns {
@@ -84,14 +84,14 @@ public class DBContract
         public static final String TABLE_NAME_CHAPTER = "Chapters";
 
         public static final String TABLE_CHAPTER_COLUMN_ID = "_id";
-        public static final String TABLE_BOOK_CHAPTER_COLUMN_ID = "book_id";
+        public static final String TABLE_CHAPTER_BOOK_COLUMN_ID = "book_id";
         public static final String TABLE_CHAPTER_COLUMN_CHAPTER_NAME_STRING = "chapter_name";
         public static final String TABLE_CHAPTER_COLUMN_CHAPTER_CONTENT_STRING = "chapter_content";
 
         public static String getChaptersCreateQuery() {
             return "CREATE TABLE " + TABLE_NAME_CHAPTER + " (" +
-                    TABLE_CHAPTER_COLUMN_ID + " LONG NOT NULL PRIMARY KEY, " +
-                    TABLE_BOOK_CHAPTER_COLUMN_ID + " LONG NOT NULL, " +
+                    TABLE_CHAPTER_COLUMN_ID + " LONG NOT NULL, " +
+                    TABLE_CHAPTER_BOOK_COLUMN_ID + " LONG NOT NULL, " +
                     TABLE_CHAPTER_COLUMN_CHAPTER_NAME_STRING + " TEXT NOT NULL, " +
                     TABLE_CHAPTER_COLUMN_CHAPTER_CONTENT_STRING + " TEXT NOT NULL " + ")";
         }
@@ -107,7 +107,7 @@ public class DBContract
 
     public static final String[] CHAPTER_PROJECTION = {
             Chapters.TABLE_CHAPTER_COLUMN_ID,
-            Chapters.TABLE_BOOK_CHAPTER_COLUMN_ID,
+            Chapters.TABLE_CHAPTER_BOOK_COLUMN_ID,
             Chapters.TABLE_CHAPTER_COLUMN_CHAPTER_NAME_STRING,
             Chapters.TABLE_CHAPTER_COLUMN_CHAPTER_CONTENT_STRING
     };

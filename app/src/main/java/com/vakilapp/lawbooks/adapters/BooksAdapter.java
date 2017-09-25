@@ -45,8 +45,7 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookItemHold
 
     @Override
     public void onBindViewHolder(BookItemHolder holder, int position) {
-        Book mo = booksObjs.get(position);
-        holder.bind(mo);
+        holder.bind(position);
     }
 
     @Override
@@ -72,8 +71,9 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookItemHold
             noOfChapters = (TextView) itemView.findViewById(R.id.book_chapters);
         }
 
-        void bind(final Book mo)
+        void bind(final int bookPos)
         {
+            Book mo = booksObjs.get(bookPos);
             String title = mo.getName();
             initialTextView.setText(title.charAt(0)+"");
             nameTextView.setText(title);
@@ -97,7 +97,7 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.BookItemHold
             downloadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    clicker.onBookDownAsked(mo,view);
+                    clicker.onBookDownAsked(bookPos,view);
                 }
             });
         }

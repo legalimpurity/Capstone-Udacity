@@ -157,6 +157,52 @@ public class Provider extends ContentProvider {
         return returnUri;
     }
 
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+
+        db.beginTransaction();
+        int returnCount = 0;
+
+        switch (match) {
+            case BOOK_DIR:
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(DBContract.Books.TABLE_NAME_BOOK, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                    db.close();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+
+            case CHAPTER_DIR:
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(DBContract.Chapters.TABLE_NAME_CHAPTER, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                    db.close();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            default:
+                return super.bulkInsert(uri, values);
+        }
+    }
+
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mDbHelper.getWritableDatabase();

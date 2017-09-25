@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -22,6 +23,7 @@ import com.vakilapp.lawbooks.R;
 import com.vakilapp.lawbooks.adapters.BooksAdapter;
 import com.vakilapp.lawbooks.interfaces.BookClickListener;
 import com.vakilapp.lawbooks.loaders.BooksOnlineLoader;
+import com.vakilapp.lawbooks.loaders.ChaptersOnlineLoader;
 import com.vakilapp.lawbooks.models.Book;
 import com.vakilapp.lawbooks.provider.DBContract;
 import com.vakilapp.lawbooks.utils.NetworkUtils;
@@ -31,11 +33,14 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity  implements LoaderManager.LoaderCallbacks, SwipeRefreshLayout.OnRefreshListener {
 
-    private static final String SAVED_INSTANCE_MOVIE_LIST = "SAVED_INSTANCE_MOVIE_LIST";
+    private static final String SAVED_INSTANCE_BOOKS_LIST = "SAVED_INSTANCE_BOOKS_LIST";
 
     private static final int ONLINE_BOOKS_DATA_LOADER = 22;
     private static final int OFFLINE_BOOKS_DATA_LOADER = 23;
 
+    private static final int ONLINE_CHAPTERS_DATA_LOADER = 24;
+
+    private boolean onlineLoaderCalledOnce = false;
     private ArrayList<Book> books_list;
     private SparseArray<Book> booksOffline = new SparseArray<Book>();
 
@@ -78,11 +83,18 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(SAVED_INSTANCE_BOOKS_LIST, books_list);
+    }
+
     private void checkForSavedInstanceState(Bundle savedInstanceState)
     {
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(SAVED_INSTANCE_MOVIE_LIST)) {
-
+            if (savedInstanceState.containsKey(SAVED_INSTANCE_BOOKS_LIST)) {
+                restoreDatafromSavedInstance(savedInstanceState);
             }
             else
                 processFlow();
@@ -91,11 +103,16 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
             processFlow();
     }
 
+    private void restoreDatafromSavedInstance(Bundle savedInstanceState)
+    {
+        books_list = savedInstanceState.getParcelableArrayList(SAVED_INSTANCE_BOOKS_LIST);
+        processLoader();
+    }
+
     private void processFlow()
     {
         Bundle queryBundle = new Bundle();
         startLoader(OFFLINE_BOOKS_DATA_LOADER,queryBundle);
-        loadFromApi();
     }
 
     private void loadFromApi()
@@ -141,11 +158,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         }
     }
 
-    private void restoreDatafromSavedInstance(Bundle savedInstanceState)
-    {
-        books_list = savedInstanceState.getParcelableArrayList(SAVED_INSTANCE_MOVIE_LIST);
-    }
-
     private void setAdapter(final Activity act)
     {
         int numberOfColumns = 2;
@@ -163,8 +175,18 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         books_list = new ArrayList<Book>();
         mAdapter = new BooksAdapter(act,books_list, new BookClickListener() {
             @Override
-            public void onBookDownAsked(Book bookName, View view) {
-
+            public void onBookDownAsked(int bookPos, View view) {
+                Book book = books_list.get(bookPos);
+                if(book.getDownloaded() == 1)
+                {
+                    // Open book
+                }
+                else if (book.getDownloaded() == 0 || book.getDownloaded() == 2) {
+                    Bundle queryBundle = new Bundle();
+                    queryBundle.putParcelable(ChaptersOnlineLoader.BBID_PARAM_BOOK_OBJ,book);
+                    queryBundle.putInt(ChaptersOnlineLoader.BBID_PARAM_BOOK_INDEX,bookPos);
+                    startLoader(ONLINE_CHAPTERS_DATA_LOADER,queryBundle);
+                }
             }
 
 //            @Override
@@ -183,19 +205,23 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
+        AsyncTaskLoader loader;
         switch(id)
         {
             case ONLINE_BOOKS_DATA_LOADER:
-                return new BooksOnlineLoader(this, args);
+                loader = new BooksOnlineLoader(this, args);
+                break;
+            case ONLINE_CHAPTERS_DATA_LOADER:
+                loader = new ChaptersOnlineLoader(this, args);
+                break;
             case OFFLINE_BOOKS_DATA_LOADER:
-                return new CursorLoader(this,
-                        DBContract.Books.CONTENT_URI,
-                        DBContract.BOOK_PROJECTION,
-                        null,
-                        null,
-                        null);
-            default:return new BooksOnlineLoader(this, args);
+                loader = new CursorLoader(this, DBContract.Books.CONTENT_URI, DBContract.BOOK_PROJECTION, null, null, null);
+                break;
+            default:
+                loader = new CursorLoader(this, DBContract.Books.CONTENT_URI, DBContract.BOOK_PROJECTION, null, null, null);
+                break;
         }
+        return loader;
     }
 
     @Override
@@ -205,6 +231,19 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
             books_list = (ArrayList<Book>) data;
 //            no_internet_text_view.setText(R.string.change_order_zero);
             processLoader();
+            swipeContainer.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeContainer.setRefreshing(false);
+                }
+            });
+        }
+        else if(loader.getId() == ONLINE_CHAPTERS_DATA_LOADER)
+        {
+            int bookPos = (int) data;
+            // Automatically done by cursor loader
+//            books_list.get(bookPos).setDownloaded(1);
+//            processLoader();
             swipeContainer.post(new Runnable() {
                 @Override
                 public void run() {
@@ -225,6 +264,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
                 books_list.add(k);
             }
             processLoader();
+            if(!onlineLoaderCalledOnce) {
+                onlineLoaderCalledOnce = true;
+                loadFromApi();
+            }
         }
     }
 

@@ -1,7 +1,10 @@
 package com.vakilapp.lawbooks.models;
 
+import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.vakilapp.lawbooks.provider.DBContract;
 
 /**
  * Created by rajatkhanna on 24/09/17.
@@ -11,11 +14,21 @@ public class Chapter implements Parcelable {
     public long id;
     public String chapterName;
     public String content;
+    public long book_id;
 
-    public Chapter(long id, String chapterName, String content) {
+    public Chapter(long id, long book_id, String chapterName, String content) {
         this.id = id;
+        this.book_id = book_id;
         this.chapterName = chapterName;
         this.content = content;
+    }
+
+    public long getBook_id() {
+        return book_id;
+    }
+
+    public void setBook_id(long book_id) {
+        this.book_id = book_id;
     }
 
     public long getId() {
@@ -42,6 +55,16 @@ public class Chapter implements Parcelable {
         this.content = content;
     }
 
+
+    public ContentValues getContentValues() {
+        ContentValues bookObjectValues = new ContentValues();
+        bookObjectValues.put(DBContract.Chapters.TABLE_CHAPTER_COLUMN_ID, id);
+        bookObjectValues.put(DBContract.Chapters.TABLE_CHAPTER_BOOK_COLUMN_ID, book_id);
+        bookObjectValues.put(DBContract.Chapters.TABLE_CHAPTER_COLUMN_CHAPTER_NAME_STRING, chapterName);
+        bookObjectValues.put(DBContract.Chapters.TABLE_CHAPTER_COLUMN_CHAPTER_CONTENT_STRING, content);
+        return bookObjectValues;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -52,15 +75,17 @@ public class Chapter implements Parcelable {
         dest.writeLong(this.id);
         dest.writeString(this.chapterName);
         dest.writeString(this.content);
+        dest.writeLong(this.book_id);
     }
 
     protected Chapter(Parcel in) {
         this.id = in.readLong();
         this.chapterName = in.readString();
         this.content = in.readString();
+        this.book_id = in.readLong();
     }
 
-    public static final Parcelable.Creator<Chapter> CREATOR = new Parcelable.Creator<Chapter>() {
+    public static final Creator<Chapter> CREATOR = new Creator<Chapter>() {
         @Override
         public Chapter createFromParcel(Parcel source) {
             return new Chapter(source);
