@@ -12,4 +12,14 @@
     <string name="update">UPDATE</string>
     <string name="open">OPEN</string>
 
+    <string name="sortBy">Sort By</string>
+    <string name="search">Search</string>
+    <string name="downloadAll">Download All</string>
+
+
+    <string name="yearOfLaw">Year of law</string>
+    <string name="alphabetically">Alphabetically</string>
+    <string name="mostFrequentlyUsed">Most frequently used</string>
+    <string name="recentlyViewed">Recently Viewed</string>
+
 </resources>

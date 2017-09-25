@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".NewDashBoard">
+    <item android:id="@+id/action_sortBy" android:title="@string/sortBy"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_search" android:title="@string/search"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_downloadAll" android:title="@string/downloadAll"
+        app:showAsAction="ifRoom"/>
+</menu>

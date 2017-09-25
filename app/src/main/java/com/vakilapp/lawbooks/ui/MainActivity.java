@@ -14,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.vakilapp.lawbooks.R;
@@ -54,6 +56,26 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         swipeContainer.setOnRefreshListener(this);
         setAdapter(this);
         checkForSavedInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.lawbooksmain, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId())
+        {
+            case R.id.action_sortBy:
+                break;
+            case R.id.action_search:
+                break;
+            case R.id.action_downloadAll:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void checkForSavedInstanceState(Bundle savedInstanceState)
