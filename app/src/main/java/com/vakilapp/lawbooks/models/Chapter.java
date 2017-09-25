@@ -1,6 +1,7 @@
 package com.vakilapp.lawbooks.models;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -63,6 +64,13 @@ public class Chapter implements Parcelable {
         bookObjectValues.put(DBContract.Chapters.TABLE_CHAPTER_COLUMN_CHAPTER_NAME_STRING, chapterName);
         bookObjectValues.put(DBContract.Chapters.TABLE_CHAPTER_COLUMN_CHAPTER_CONTENT_STRING, content);
         return bookObjectValues;
+    }
+
+    public Chapter(Cursor mCursor) {
+        this.id = mCursor.getLong(DBContract.CHAPTER_PROJECTION_INDEXES.TABLE_CHAPTER_COLUMN_ID);
+        this.book_id = mCursor.getLong(DBContract.CHAPTER_PROJECTION_INDEXES.TABLE_BOOK_CHAPTER_COLUMN_ID);
+        this.chapterName = mCursor.getString(DBContract.CHAPTER_PROJECTION_INDEXES.TABLE_CHAPTER_COLUMN_CHAPTER_NAME_STRING);
+        this.content = mCursor.getString(DBContract.CHAPTER_PROJECTION_INDEXES.TABLE_CHAPTER_COLUMN_CHAPTER_CONTENT_STRING);
     }
 
     @Override

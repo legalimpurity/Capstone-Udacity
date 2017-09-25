@@ -1,6 +1,7 @@
 package com.vakilapp.lawbooks.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -31,7 +32,7 @@ import com.vakilapp.lawbooks.utils.Snackbarer;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity  implements LoaderManager.LoaderCallbacks, SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String SAVED_INSTANCE_BOOKS_LIST = "SAVED_INSTANCE_BOOKS_LIST";
 
@@ -167,8 +168,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
         else{
             numberOfColumns = 3;
         }
-        RecyclerView.LayoutManager moviesLayoutManager = new GridLayoutManager(act,numberOfColumns);
-        myRecycler.setLayoutManager(moviesLayoutManager);
+        RecyclerView.LayoutManager booksLayoutManager = new GridLayoutManager(act,numberOfColumns);
+        myRecycler.setLayoutManager(booksLayoutManager);
 
         myRecycler.setHasFixedSize(true);
 
@@ -180,6 +181,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
                 if(book.getDownloaded() == 1)
                 {
                     // Open book
+                    openBook(act,book);
                 }
                 else if (book.getDownloaded() == 0 || book.getDownloaded() == 2) {
                     Bundle queryBundle = new Bundle();
@@ -203,6 +205,15 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
 
     }
 
+    private void openBook(Activity act, Book book)
+    {
+        Intent bookDetailActivityClickIntent = new Intent(act,ChapterListActivity.class);
+        Bundle extras = new Bundle();
+        extras.putParcelable(ChapterListActivity.BOOK_OBJ,book);
+        bookDetailActivityClickIntent.putExtras(extras);
+        act.startActivity(bookDetailActivityClickIntent);
+
+    }
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
         AsyncTaskLoader loader;
@@ -250,6 +261,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
                     swipeContainer.setRefreshing(false);
                 }
             });
+            openBook(this,books_list.get(bookPos));
         }
         else if (loader.getId() == OFFLINE_BOOKS_DATA_LOADER)
         {
@@ -276,11 +288,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderManager.Lo
     {
         if (mAdapter!=null)
                mAdapter.setBooksData(books_list);
-//        wasDataLoadedPerfectlyForSelectedApiCode = true;
-//        if(movies_list != null && movies_list.size() == 0)
-//            showErrorMessage();
-//        else
-//            showMovies();
     }
 
     @Override

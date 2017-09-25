@@ -27,12 +27,16 @@
             android:name=".provider.Provider"
             android:authorities="com.vakilapp.lawbooks.cp"
             android:exported="false"
-            android:syncable="true" />
+            android:syncable="true"/>
 
         <activity
             android:name=".ui.ChapterListActivity"
             android:label="@string/title_activity_chapter_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
