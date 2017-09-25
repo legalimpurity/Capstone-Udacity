@@ -31,6 +31,9 @@ public class ChapterListActivity extends AppCompatActivity implements LoaderMana
 
     private static final int OFFLINE_CHAPTERS_DATA_LOADER = 25;
 
+    private static final String SAVED_INSTANCE_BOOK = "SAVED_INSTANCE_BOOK";
+    private static final String SAVED_INSTANCE_CHAPTERS_LIST = "SAVED_INSTANCE_CHAPTERS_LISTs";
+
     private Book bk;
     private ArrayList<Chapter> chapters_list;
 
@@ -47,9 +50,8 @@ public class ChapterListActivity extends AppCompatActivity implements LoaderMana
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        processFlow(this);
         setAdapter(this);
-        startLoader();
+        checkForSavedInstanceState(savedInstanceState,this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -59,18 +61,60 @@ public class ChapterListActivity extends AppCompatActivity implements LoaderMana
                         .setAction("Action", null).show();
             }
         });
-
-
     }
 
-    private void processFlow(AppCompatActivity act)
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(SAVED_INSTANCE_BOOK, bk);
+        outState.putParcelableArrayList(SAVED_INSTANCE_CHAPTERS_LIST, chapters_list);
+    }
+
+    private void checkForSavedInstanceState(Bundle savedInstanceState, Activity act)
+    {
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(SAVED_INSTANCE_BOOK)) {
+                if (savedInstanceState.containsKey(SAVED_INSTANCE_CHAPTERS_LIST)) {
+                    restoreDatafromSavedInstance(savedInstanceState);
+                }
+                else
+                    partialRestoreDatafromSavedInstance(savedInstanceState);
+            }
+            else
+                processFlow(act);
+        }
+        else
+            processFlow(act);
+    }
+
+    private void restoreDatafromSavedInstance(Bundle savedInstanceState)
+    {
+        bk = savedInstanceState.getParcelable(SAVED_INSTANCE_BOOK);
+        chapters_list = savedInstanceState.getParcelableArrayList(SAVED_INSTANCE_CHAPTERS_LIST);
+        mAdapter.setChaptersData(chapters_list);
+    }
+
+    private void partialRestoreDatafromSavedInstance(Bundle savedInstanceState)
+    {
+        bk = savedInstanceState.getParcelable(SAVED_INSTANCE_BOOK);
+        bookFound();
+    }
+
+    private void processFlow(Activity act)
     {
         if(getIntent() != null && getIntent().getExtras() != null) {
             bk = (Book) getIntent().getExtras().getParcelable(BOOK_OBJ);
-            getSupportActionBar().setTitle(bk.getName());
+            bookFound();
         }
         else
             NavUtils.navigateUpFromSameTask(act);
+    }
+
+    private void bookFound()
+    {
+        getSupportActionBar().setTitle(bk.getName());
+        startLoader();
     }
 
     private void setAdapter(final Activity act)

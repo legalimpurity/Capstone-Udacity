@@ -9,14 +9,14 @@
     tools:context="com.vakilapp.lawbooks.ui.ChapterDetailActivity$ChapterDetailFragment"
     android:orientation="vertical">
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
@@ -26,7 +26,8 @@
                 tools:text="Short Title And Extent. (Air Crafts Act 1934)"
                 style="@style/Base.TextAppearance.AppCompat.Title"
                 android:layout_marginBottom="16dp"
-                android:textIsSelectable="true"/>
+                android:textIsSelectable="true"
+                android:focusable="true"/>
 
             <TextView
                 android:id="@+id/section_label2"
@@ -34,10 +35,11 @@
                 android:layout_height="wrap_content"
                 tools:text="@string/large_text"
                 style="@style/Base.TextAppearance.AppCompat.Medium"
-                android:textIsSelectable="true"/>
-
+                android:textIsSelectable="true"
+                android:focusable="true"
+                android:paddingBottom="30dp"/>
         </LinearLayout>
 
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>
