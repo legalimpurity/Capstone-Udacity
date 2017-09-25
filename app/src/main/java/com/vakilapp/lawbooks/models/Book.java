@@ -22,7 +22,6 @@ public class Book implements Parcelable {
     private long downloaded;
     private long numberOfChapters;
 
-    private ArrayList<Chapter> chapters;
 
     public Book(int id, String name, int version, int downloaded, int numberOfChapters) {
         this.id = id;
@@ -46,15 +45,6 @@ public class Book implements Parcelable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-
-    public ArrayList<Chapter> getChapters() {
-        return chapters;
-    }
-
-    public void setChapters(ArrayList<Chapter> chapters) {
-        this.chapters = chapters;
     }
 
     public long getId() {
@@ -90,6 +80,16 @@ public class Book implements Parcelable {
     }
 
 
+    public ContentValues getContentValues() {
+        ContentValues bookObjectValues = new ContentValues();
+        bookObjectValues.put(DBContract.Books.TABLE_BOOK_COLUMN_ID, id);
+        bookObjectValues.put(DBContract.Books.TABLE_BOOK_COLUMN_NAME_STRING, name);
+        bookObjectValues.put(DBContract.Books.TABLE_BOOK_COLUMN_VERSION_INT, version);
+        bookObjectValues.put(DBContract.Books.TABLE_BOOK_COLUMN_DOWNLOADED_INT, downloaded);
+        bookObjectValues.put(DBContract.Books.TABLE_BOOK_NOOFCHAP, numberOfChapters);
+        return bookObjectValues;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -102,7 +102,6 @@ public class Book implements Parcelable {
         dest.writeLong(this.version);
         dest.writeLong(this.downloaded);
         dest.writeLong(this.numberOfChapters);
-        dest.writeTypedList(this.chapters);
     }
 
     protected Book(Parcel in) {
@@ -111,7 +110,6 @@ public class Book implements Parcelable {
         this.version = in.readLong();
         this.downloaded = in.readLong();
         this.numberOfChapters = in.readLong();
-        this.chapters = in.createTypedArrayList(Chapter.CREATOR);
     }
 
     public static final Creator<Book> CREATOR = new Creator<Book>() {
@@ -125,15 +123,4 @@ public class Book implements Parcelable {
             return new Book[size];
         }
     };
-
-    public ContentValues getContentValues() {
-        ContentValues bookObjectValues = new ContentValues();
-        bookObjectValues.put(DBContract.Books.TABLE_BOOK_COLUMN_ID, id);
-        bookObjectValues.put(DBContract.Books.TABLE_BOOK_COLUMN_NAME_STRING, name);
-        bookObjectValues.put(DBContract.Books.TABLE_BOOK_COLUMN_VERSION_INT, version);
-        bookObjectValues.put(DBContract.Books.TABLE_BOOK_COLUMN_DOWNLOADED_INT, downloaded);
-        bookObjectValues.put(DBContract.Books.TABLE_BOOK_NOOFCHAP, numberOfChapters);
-        return bookObjectValues;
-    }
-
 }

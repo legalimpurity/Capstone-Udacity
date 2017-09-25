@@ -12,10 +12,11 @@ import com.vakilapp.lawbooks.provider.DBContract;
  */
 
 public class Chapter implements Parcelable {
-    public long id;
-    public String chapterName;
-    public String content;
-    public long book_id;
+
+    private long id;
+    private String chapterName;
+    private String content;
+    private long book_id;
 
     public Chapter(long id, long book_id, String chapterName, String content) {
         this.id = id;

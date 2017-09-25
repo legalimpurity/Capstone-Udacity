@@ -212,7 +212,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         extras.putParcelable(ChapterListActivity.BOOK_OBJ,book);
         bookDetailActivityClickIntent.putExtras(extras);
         act.startActivity(bookDetailActivityClickIntent);
-
     }
     @Override
     public Loader onCreateLoader(int id, Bundle args) {

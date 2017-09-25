@@ -1,6 +1,7 @@
 package com.vakilapp.lawbooks.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -72,7 +73,7 @@ public class ChapterListActivity extends AppCompatActivity implements LoaderMana
             NavUtils.navigateUpFromSameTask(act);
     }
 
-    private void setAdapter(Activity act)
+    private void setAdapter(final Activity act)
     {
         RecyclerView.LayoutManager booksLayoutManager = new LinearLayoutManager(act);
         myRecycler.setLayoutManager(booksLayoutManager);
@@ -82,7 +83,13 @@ public class ChapterListActivity extends AppCompatActivity implements LoaderMana
         mAdapter = new ChaptersListAdapter(act, chapters_list, new ChapterClickListener() {
             @Override
             public void onChapterClicked(int chaperPosBook, ArrayList<Chapter> chaptersObjs, View view) {
-
+                Intent chapterDetailActivityClickIntent = new Intent(act,ChapterDetailActivity.class);
+                Bundle extras = new Bundle();
+                extras.putParcelableArrayList(ChapterDetailActivity.CHAP_OBJS,chaptersObjs);
+                extras.putParcelable(ChapterDetailActivity.BOOK_OBJ,bk);
+                extras.putInt(ChapterDetailActivity.SELECTED_CHAP_OBJ,chaperPosBook);
+                chapterDetailActivityClickIntent.putExtras(extras);
+                act.startActivity(chapterDetailActivityClickIntent);
             }
         });
 
