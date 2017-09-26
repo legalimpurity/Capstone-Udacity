@@ -9,14 +9,25 @@ import android.support.annotation.NonNull;
  * Created by rajatkhanna on 19/09/17.
  */
 
-public class DBContract
-{
+public class DBContract {
     public static final String CONTENT_AUTHORITY = "com.vakilapp.lawbooks.cp";
-    private static final String CONTENT_SCHEME = "content://";
-    public static final Uri BASE_CONTENT_URI = Uri.parse(CONTENT_SCHEME + CONTENT_AUTHORITY);
-
     public static final String PATH_BOOK = "book";
     public static final String PATH_CHAPTER = "chapter";
+    public static final String[] BOOK_PROJECTION = {
+            Books.TABLE_BOOK_COLUMN_ID,
+            Books.TABLE_BOOK_COLUMN_NAME_STRING,
+            Books.TABLE_BOOK_COLUMN_VERSION_INT,
+            Books.TABLE_BOOK_NOOFCHAP,
+            Books.TABLE_BOOK_COLUMN_DOWNLOADED_INT
+    };
+    public static final String[] CHAPTER_PROJECTION = {
+            Chapters.TABLE_CHAPTER_COLUMN_ID,
+            Chapters.TABLE_CHAPTER_BOOK_COLUMN_ID,
+            Chapters.TABLE_CHAPTER_COLUMN_CHAPTER_NAME_STRING,
+            Chapters.TABLE_CHAPTER_COLUMN_CHAPTER_CONTENT_STRING
+    };
+    private static final String CONTENT_SCHEME = "content://";
+    public static final Uri BASE_CONTENT_URI = Uri.parse(CONTENT_SCHEME + CONTENT_AUTHORITY);
 
     public DBContract() {
     }
@@ -47,6 +58,7 @@ public class DBContract
                     TABLE_BOOK_NOOFCHAP + " LONG NOT NULL, " +
                     TABLE_BOOK_COLUMN_DOWNLOADED_INT + " LONG NOT NULL " + ")";
         }
+
         public static String getBooksDeleteQuery() {
             return "DROP TABLE IF EXISTS " + TABLE_NAME_BOOK;
         }
@@ -56,14 +68,7 @@ public class DBContract
         }
     }
 
-    public static final String[] BOOK_PROJECTION = {
-            Books.TABLE_BOOK_COLUMN_ID,
-            Books.TABLE_BOOK_COLUMN_NAME_STRING,
-            Books.TABLE_BOOK_COLUMN_VERSION_INT,
-            Books.TABLE_BOOK_NOOFCHAP,
-            Books.TABLE_BOOK_COLUMN_DOWNLOADED_INT
-    };
-
+    ;
 
     public static final class BOOK_PROJECTION_INDEXES {
         public static final int TABLE_BOOK_COLUMN_ID = 0;
@@ -71,7 +76,7 @@ public class DBContract
         public static final int TABLE_BOOK_COLUMN_VERSION_INT = 2;
         public static final int TABLE_BOOK_NOOFCHAP = 3;
         public static final int TABLE_BOOK_COLUMN_DOWNLOADED_INT = 4;
-    };
+    }
 
     public static abstract class Chapters implements BaseColumns {
         @NonNull
@@ -105,19 +110,13 @@ public class DBContract
         }
     }
 
-    public static final String[] CHAPTER_PROJECTION = {
-            Chapters.TABLE_CHAPTER_COLUMN_ID,
-            Chapters.TABLE_CHAPTER_BOOK_COLUMN_ID,
-            Chapters.TABLE_CHAPTER_COLUMN_CHAPTER_NAME_STRING,
-            Chapters.TABLE_CHAPTER_COLUMN_CHAPTER_CONTENT_STRING
-    };
-
-
     public static final class CHAPTER_PROJECTION_INDEXES {
         public static final int TABLE_CHAPTER_COLUMN_ID = 0;
         public static final int TABLE_BOOK_CHAPTER_COLUMN_ID = 1;
         public static final int TABLE_CHAPTER_COLUMN_CHAPTER_NAME_STRING = 2;
         public static final int TABLE_CHAPTER_COLUMN_CHAPTER_CONTENT_STRING = 3;
-    };
+    }
+
+    ;
 
 }

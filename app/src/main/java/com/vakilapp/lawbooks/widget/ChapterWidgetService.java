@@ -33,7 +33,7 @@ public class ChapterWidgetService extends IntentService {
             final String action = intent.getAction();
             if (CHAPTER_WIDGET_ACTION_UPDATE.equals(action) &&
                     intent.getParcelableExtra(BUNDLE_CHAPTER_WIDGET_DATA) != null) {
-                handleActionUpdateWidgets((Chapter)intent.getParcelableExtra(BUNDLE_CHAPTER_WIDGET_DATA));
+                handleActionUpdateWidgets((Chapter) intent.getParcelableExtra(BUNDLE_CHAPTER_WIDGET_DATA));
             }
         }
     }

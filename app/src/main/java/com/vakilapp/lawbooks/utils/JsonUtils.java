@@ -42,20 +42,19 @@ public class JsonUtils {
             JSONObject bookJSONObj = booksArray.getJSONObject(i);
             Book currentBook = new Book(bookJSONObj.getInt(BOOK_OBJ_ATTR_ID),
                     bookJSONObj.getString(BOOK_OBJ_ATTR_NAME),
-                    bookJSONObj.getInt(BOOK_OBJ_ATTR_VERSION),0,bookJSONObj.getInt(BOOK_OBJ_ATTR_NOOFCHAP));
+                    bookJSONObj.getInt(BOOK_OBJ_ATTR_VERSION), 0, bookJSONObj.getInt(BOOK_OBJ_ATTR_NOOFCHAP));
 
-            int f = offlineSet.indexOfKey((int)currentBook.getId());
-            if(f == -1)
+            int f = offlineSet.indexOfKey((int) currentBook.getId());
+            if (f == -1)
                 context.getContentResolver().insert(DBContract.Books.CONTENT_URI, currentBook.getContentValues());
-            else
-            {
-                Book currentBookOffline = offlineSet.get((int)currentBook.getId());
+            else {
+                Book currentBookOffline = offlineSet.get((int) currentBook.getId());
                 // If book is downloaded
                 if (currentBookOffline.getDownloaded() == 1) {
                     currentBook.setDownloaded(1);
                 } else if (currentBookOffline.getDownloaded() == 2) {
-                        currentBook.setDownloaded(2);
-                    } else {
+                    currentBook.setDownloaded(2);
+                } else {
                     currentBook.setDownloaded(0);
                 }
 
@@ -66,9 +65,9 @@ public class JsonUtils {
                     currentBook.setDownloaded(2);
                 }
 
-                String whereClause = DBContract.Books.TABLE_BOOK_COLUMN_ID+"=?";
-                String [] whereArgs = {currentBook.getId()+""};
-                context.getContentResolver().update(DBContract.Books.CONTENT_URI, currentBook.getContentValues(),whereClause,whereArgs);
+                String whereClause = DBContract.Books.TABLE_BOOK_COLUMN_ID + "=?";
+                String[] whereArgs = {currentBook.getId() + ""};
+                context.getContentResolver().update(DBContract.Books.CONTENT_URI, currentBook.getContentValues(), whereClause, whereArgs);
             }
             parsedBooksData.add(currentBook);
         }
@@ -97,25 +96,24 @@ public class JsonUtils {
 
         Vector<ContentValues> chaptersVector = new Vector<ContentValues>(chaptersArray.length());
 
-        for (int i = 0; i < chaptersArray.length(); i++)
-        {
+        for (int i = 0; i < chaptersArray.length(); i++) {
             JSONObject chapterJSONObj = chaptersArray.getJSONObject(i);
-            Chapter currentChapter = new Chapter(chapterJSONObj.getLong(BOOK_OBJ_ATTR_ID),bbid.getId(),chapterJSONObj.getString(BOOK_OBJ_ATTR_MODULE_NAME),chapterJSONObj.getString(BOOK_OBJ_ATTR_CONTENT));
+            Chapter currentChapter = new Chapter(chapterJSONObj.getLong(BOOK_OBJ_ATTR_ID), bbid.getId(), chapterJSONObj.getString(BOOK_OBJ_ATTR_MODULE_NAME), chapterJSONObj.getString(BOOK_OBJ_ATTR_CONTENT));
             chaptersVector.add(currentChapter.getContentValues());
             parsedChaptersData.add(currentChapter);
         }
 
         int insertedval = 0;
-        if ( chaptersVector.size() > 0 ) {
+        if (chaptersVector.size() > 0) {
             ContentValues[] cvArray = new ContentValues[chaptersVector.size()];
             chaptersVector.toArray(cvArray);
             insertedval = context.getContentResolver().bulkInsert(DBContract.Chapters.CONTENT_URI, cvArray);
         }
 
         bbid.setDownloaded(1);
-        String whereClause = DBContract.Books.TABLE_BOOK_COLUMN_ID+"=?";
-        String [] whereArgs = {bbid.getId()+""};
-        context.getContentResolver().update(DBContract.Books.CONTENT_URI, bbid.getContentValues(),whereClause,whereArgs);
+        String whereClause = DBContract.Books.TABLE_BOOK_COLUMN_ID + "=?";
+        String[] whereArgs = {bbid.getId() + ""};
+        context.getContentResolver().update(DBContract.Books.CONTENT_URI, bbid.getContentValues(), whereClause, whereArgs);
 
         return parsedChaptersData;
     }

@@ -1,50 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:orientation="horizontal"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp">
 
     <TextView
         android:id="@+id/book_first_letter"
+        style="@style/Base.TextAppearance.AppCompat.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="35sp"
-        style="@style/Base.TextAppearance.AppCompat.Large"
-        tools:text="A"
         android:layout_gravity="center"
         android:paddingLeft="10dp"
-        android:paddingRight="20dp"/>
+        android:paddingRight="20dp"
+        android:textSize="35sp"
+        tools:text="A" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/book_name"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="0.5"
-            tools:text="Air Crafts Act"/>
+            tools:text="Air Crafts Act" />
+
         <TextView
             android:id="@+id/book_chapters"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="0.5"
-            tools:text="4 Chapters"/>
+            tools:text="4 Chapters" />
 
     </LinearLayout>
+
     <Button
         android:id="@+id/download_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:textSize="10sp"
-        android:layout_gravity="center"/>
+        android:textSize="10sp" />
 </LinearLayout>

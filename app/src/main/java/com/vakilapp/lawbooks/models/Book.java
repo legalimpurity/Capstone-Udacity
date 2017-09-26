@@ -7,21 +7,29 @@ import android.os.Parcelable;
 
 import com.vakilapp.lawbooks.provider.DBContract;
 
-import java.util.ArrayList;
-
 /**
  * Created by rajatkhanna on 24/09/17.
  */
 
 public class Book implements Parcelable {
 
+    public static final Creator<Book> CREATOR = new Creator<Book>() {
+        @Override
+        public Book createFromParcel(Parcel source) {
+            return new Book(source);
+        }
+
+        @Override
+        public Book[] newArray(int size) {
+            return new Book[size];
+        }
+    };
     private long id;
     private String name;
     private long version;
     // 0 = NOT DOWNLOADED, 1 = DOWNLOADED, 2 = UPDATED
     private long downloaded;
     private long numberOfChapters;
-
 
     public Book(int id, String name, int version, int downloaded, int numberOfChapters) {
         this.id = id;
@@ -37,6 +45,14 @@ public class Book implements Parcelable {
         this.version = mCursor.getLong(DBContract.BOOK_PROJECTION_INDEXES.TABLE_BOOK_COLUMN_VERSION_INT);
         this.downloaded = mCursor.getLong(DBContract.BOOK_PROJECTION_INDEXES.TABLE_BOOK_COLUMN_DOWNLOADED_INT);
         this.numberOfChapters = mCursor.getLong(DBContract.BOOK_PROJECTION_INDEXES.TABLE_BOOK_NOOFCHAP);
+    }
+
+    protected Book(Parcel in) {
+        this.id = in.readLong();
+        this.name = in.readString();
+        this.version = in.readLong();
+        this.downloaded = in.readLong();
+        this.numberOfChapters = in.readLong();
     }
 
     public String getName() {
@@ -79,7 +95,6 @@ public class Book implements Parcelable {
         this.numberOfChapters = numberOfChapters;
     }
 
-
     public ContentValues getContentValues() {
         ContentValues bookObjectValues = new ContentValues();
         bookObjectValues.put(DBContract.Books.TABLE_BOOK_COLUMN_ID, id);
@@ -103,24 +118,4 @@ public class Book implements Parcelable {
         dest.writeLong(this.downloaded);
         dest.writeLong(this.numberOfChapters);
     }
-
-    protected Book(Parcel in) {
-        this.id = in.readLong();
-        this.name = in.readString();
-        this.version = in.readLong();
-        this.downloaded = in.readLong();
-        this.numberOfChapters = in.readLong();
-    }
-
-    public static final Creator<Book> CREATOR = new Creator<Book>() {
-        @Override
-        public Book createFromParcel(Parcel source) {
-            return new Book(source);
-        }
-
-        @Override
-        public Book[] newArray(int size) {
-            return new Book[size];
-        }
-    };
 }

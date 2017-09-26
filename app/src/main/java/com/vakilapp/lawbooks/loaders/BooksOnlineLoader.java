@@ -50,8 +50,8 @@ public class BooksOnlineLoader extends AsyncTaskLoader {
 
         try {
             String jsonBooksResponse = RequestUtils
-                    .getResponseFromHttpUrl(bookRequestUrl,BBID);
-            ArrayList<Book> output = JsonUtils.getBookFromJson(context,jsonBooksResponse,booksOffline);
+                    .getResponseFromHttpUrl(bookRequestUrl, BBID);
+            ArrayList<Book> output = JsonUtils.getBookFromJson(context, jsonBooksResponse, booksOffline);
             return output;
         } catch (Exception e) {
             e.printStackTrace();

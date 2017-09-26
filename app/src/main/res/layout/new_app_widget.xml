@@ -1,27 +1,25 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#00000000"
-    android:padding="@dimen/widget_margin"
     android:orientation="vertical"
-    android:id="@+id/widget_root_view">
+    android:padding="@dimen/widget_margin">
 
     <TextView
         android:id="@+id/appwidget_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
+        android:padding="5dp"
         android:text="@string/appwidget_placeholder_text"
         android:textColor="#ffffff"
         android:textSize="24sp"
-        android:textStyle="bold|italic"
-        android:padding="5dp"/>
+        android:textStyle="bold|italic" />
 
     <LinearLayout
         android:id="@+id/widget_chapters_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"/>
+        android:orientation="vertical" />
 </LinearLayout>

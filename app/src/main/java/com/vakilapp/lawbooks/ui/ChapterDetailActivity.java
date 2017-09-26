@@ -60,9 +60,8 @@ public class ChapterDetailActivity extends AppCompatActivity {
 
     }
 
-    private void processFlow(AppCompatActivity act)
-    {
-        if(getIntent() != null && getIntent().getExtras() != null) {
+    private void processFlow(AppCompatActivity act) {
+        if (getIntent() != null && getIntent().getExtras() != null) {
             chapters_list = getIntent().getExtras().getParcelableArrayList(CHAP_OBJS);
             selectedPos = getIntent().getExtras().getInt(SELECTED_CHAP_OBJ);
             bk = getIntent().getExtras().getParcelable(BOOK_OBJ);
@@ -70,13 +69,11 @@ public class ChapterDetailActivity extends AppCompatActivity {
             mSectionsPagerAdapter.notifyDataSetChanged();
 
             mViewPager.setCurrentItem(selectedPos);
-        }
-        else
+        } else
             NavUtils.navigateUpFromSameTask(act);
     }
 
-    private void setAdapter()
-    {
+    private void setAdapter() {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager = (ViewPager) findViewById(R.id.container);

@@ -19,28 +19,26 @@ import java.util.ArrayList;
  * Created by rajatkhanna on 24/09/17.
  */
 
-public class ChaptersListAdapter extends RecyclerView.Adapter<ChaptersListAdapter.BookItemHolder>{
+public class ChaptersListAdapter extends RecyclerView.Adapter<ChaptersListAdapter.BookItemHolder> {
 
     private ArrayList<Chapter> chaptersObjs;
     private Activity act;
     private ChapterClickListener clicker;
 
-    public ChaptersListAdapter(Activity act, ArrayList<Chapter> chaptersObjs, ChapterClickListener clicker)
-    {
+    public ChaptersListAdapter(Activity act, ArrayList<Chapter> chaptersObjs, ChapterClickListener clicker) {
         this.chaptersObjs = chaptersObjs;
         this.act = act;
         this.clicker = clicker;
     }
 
-    public void setChaptersData(ArrayList<Chapter> chaptersObjs)
-    {
+    public void setChaptersData(ArrayList<Chapter> chaptersObjs) {
         this.chaptersObjs = chaptersObjs;
         notifyDataSetChanged();
     }
 
     @Override
     public BookItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(act).inflate(R.layout.chapter_list_item, parent,false);
+        View layoutView = LayoutInflater.from(act).inflate(R.layout.chapter_list_item, parent, false);
         return new BookItemHolder(layoutView);
     }
 
@@ -51,13 +49,12 @@ public class ChaptersListAdapter extends RecyclerView.Adapter<ChaptersListAdapte
 
     @Override
     public int getItemCount() {
-        if(chaptersObjs == null)
+        if (chaptersObjs == null)
             return 0;
         return chaptersObjs.size();
     }
 
-    public class BookItemHolder extends RecyclerView.ViewHolder
-    {
+    public class BookItemHolder extends RecyclerView.ViewHolder {
 
         private TextView initialTextView;
         private LinearLayout rootLay;
@@ -70,21 +67,16 @@ public class ChaptersListAdapter extends RecyclerView.Adapter<ChaptersListAdapte
             rootLay = (LinearLayout) itemView.findViewById(R.id.rootLay);
         }
 
-        void bind(final int bookPos)
-        {
+        void bind(final int bookPos) {
             Chapter chap = chaptersObjs.get(bookPos);
             String title = chap.getChapterName();
-            if(TextUtils.isDigitsOnly(title.substring(0,2)))
-            {
+            if (TextUtils.isDigitsOnly(title.substring(0, 2))) {
                 initialTextView.setText(title.substring(0, 2) + "");
                 nameTextView.setText(title.substring(3));
-            }
-            else if (TextUtils.isDigitsOnly(title.substring(0,1))) {
+            } else if (TextUtils.isDigitsOnly(title.substring(0, 1))) {
                 initialTextView.setText(title.substring(0, 1) + "");
                 nameTextView.setText(title.substring(2));
-            }
-            else
-            {
+            } else {
                 initialTextView.setText(title.substring(0, 1) + "");
                 nameTextView.setText(title);
             }
@@ -92,8 +84,9 @@ public class ChaptersListAdapter extends RecyclerView.Adapter<ChaptersListAdapte
             rootLay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    clicker.onChapterClicked(bookPos,chaptersObjs,view);
+                    clicker.onChapterClicked(bookPos, chaptersObjs, view);
                 }
             });
         }
-    }}
+    }
+}

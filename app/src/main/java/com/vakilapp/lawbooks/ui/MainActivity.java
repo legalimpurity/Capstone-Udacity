@@ -48,14 +48,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private static final int ONLINE_BOOKS_DATA_LOADER = 22;
     private static final int OFFLINE_BOOKS_DATA_LOADER = 23;
-
-
-    private boolean onlineLoaderCalledOnce = false;
-    private ArrayList<Book> books_list;
-    private SparseArray<Book> booksOffline = new SparseArray<Book>();
-
-    private FirebaseAnalytics mFirebaseAnalytics;
-
     @BindView(R.id.my_recycler)
     RecyclerView myRecycler;
     @BindView(R.id.swipeContainer)
@@ -64,8 +56,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     CoordinatorLayout activityMainRoot;
     @BindView(R.id.adView)
     AdView mAdView;
-
+    private boolean onlineLoaderCalledOnce = false;
+    private ArrayList<Book> books_list;
+    private SparseArray<Book> booksOffline = new SparseArray<Book>();
+    private FirebaseAnalytics mFirebaseAnalytics;
     private BooksAdapter mAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,8 +83,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId())
-        {
+        switch (item.getItemId()) {
             case R.id.action_sortBy:
                 break;
             case R.id.action_search:
@@ -100,50 +95,43 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState)
-    {
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(SAVED_INSTANCE_BOOKS_LIST, books_list);
     }
 
-    private void addNAnalytics()
-    {
+    private void addNAnalytics() {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
     }
-    private void checkForSavedInstanceState(Bundle savedInstanceState)
-    {
+
+    private void checkForSavedInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(SAVED_INSTANCE_BOOKS_LIST)) {
                 restoreDatafromSavedInstance(savedInstanceState);
-            }
-            else
+            } else
                 processFlow();
-        }
-        else
+        } else
             processFlow();
     }
 
-    private void restoreDatafromSavedInstance(Bundle savedInstanceState)
-    {
+    private void restoreDatafromSavedInstance(Bundle savedInstanceState) {
         books_list = savedInstanceState.getParcelableArrayList(SAVED_INSTANCE_BOOKS_LIST);
         processLoader();
     }
 
-    private void processFlow()
-    {
+    private void processFlow() {
         Bundle queryBundle = new Bundle();
-        startLoader(OFFLINE_BOOKS_DATA_LOADER,queryBundle);
+        startLoader(OFFLINE_BOOKS_DATA_LOADER, queryBundle);
     }
 
-    private void loadFromApi()
-    {
-        if(NetworkUtils.isNetworkAvailable(this)) {
+    private void loadFromApi() {
+        if (NetworkUtils.isNetworkAvailable(this)) {
             Bundle queryBundle = new Bundle();
-            queryBundle.putString(BooksOnlineLoader.BBID_PARAM,"NA");
-            queryBundle.putSparseParcelableArray(BooksOnlineLoader.OFFLINE_BOOKS_PARAM,booksOffline);
+            queryBundle.putString(BooksOnlineLoader.BBID_PARAM, "NA");
+            queryBundle.putSparseParcelableArray(BooksOnlineLoader.OFFLINE_BOOKS_PARAM, booksOffline);
             startLoader(ONLINE_BOOKS_DATA_LOADER, queryBundle);
             swipeContainer.post(new Runnable() {
                 @Override
@@ -151,9 +139,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     swipeContainer.setRefreshing(true);
                 }
             });
-        }
-        else
-        {
+        } else {
             Snackbarer.showMsg(activityMainRoot, R.string.no_internet_error, R.string.retry, new Snackbarer.SnackbarerInterface() {
                 @Override
                 public void onActionOccured() {
@@ -170,8 +156,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    private void startLoader(int LOADER_CODE, Bundle queryBundle)
-    {
+    private void startLoader(int LOADER_CODE, Bundle queryBundle) {
         LoaderManager loaderManager = getSupportLoaderManager();
         Loader booksLoader = loaderManager.getLoader(LOADER_CODE);
         if (booksLoader == null) {
@@ -181,38 +166,34 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    private void setAdapter(final Activity act)
-    {
+    private void setAdapter(final Activity act) {
         int numberOfColumns = 2;
-        if(act.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+        if (act.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             numberOfColumns = 1;
-        }
-        else{
+        } else {
             numberOfColumns = 2;
         }
-        RecyclerView.LayoutManager booksLayoutManager = new GridLayoutManager(act,numberOfColumns);
+        RecyclerView.LayoutManager booksLayoutManager = new GridLayoutManager(act, numberOfColumns);
         myRecycler.setLayoutManager(booksLayoutManager);
 
         myRecycler.setHasFixedSize(true);
 
         books_list = new ArrayList<Book>();
-        mAdapter = new BooksAdapter(act,books_list, new BookClickListener() {
+        mAdapter = new BooksAdapter(act, books_list, new BookClickListener() {
             @Override
             public void onBookDownAsked(int bookPos, View view) {
                 Book book = books_list.get(bookPos);
-                if(book.getDownloaded() == 1)
-                {
+                if (book.getDownloaded() == 1) {
                     // Open book
-                    openBook(act,book);
-                }
-                else if (book.getDownloaded() == 0 || book.getDownloaded() == 2) {
+                    openBook(act, book);
+                } else if (book.getDownloaded() == 0 || book.getDownloaded() == 2) {
                     Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, book.getId()+"");
-                    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, book.getName()+"");
+                    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, book.getId() + "");
+                    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, book.getName() + "");
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "book");
                     mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                     ChaptersDownloadAsyncTask runnerc = new ChaptersDownloadAsyncTask();
-                    runnerc.setBookAndContext(book,act,bookPos);
+                    runnerc.setBookAndContext(book, act, bookPos);
                     runnerc.execute();
                 }
             }
@@ -231,19 +212,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     }
 
-    private void openBook(Activity act, Book book)
-    {
-        Intent bookDetailActivityClickIntent = new Intent(act,ChapterListActivity.class);
+    private void openBook(Activity act, Book book) {
+        Intent bookDetailActivityClickIntent = new Intent(act, ChapterListActivity.class);
         Bundle extras = new Bundle();
-        extras.putParcelable(ChapterListActivity.BOOK_OBJ,book);
+        extras.putParcelable(ChapterListActivity.BOOK_OBJ, book);
         bookDetailActivityClickIntent.putExtras(extras);
         act.startActivity(bookDetailActivityClickIntent);
     }
+
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
         AsyncTaskLoader loader;
-        switch(id)
-        {
+        switch (id) {
             case ONLINE_BOOKS_DATA_LOADER:
                 loader = new BooksOnlineLoader(this, args);
                 break;
@@ -259,8 +239,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader loader, Object data) {
-        if(loader.getId() == ONLINE_BOOKS_DATA_LOADER)
-        {
+        if (loader.getId() == ONLINE_BOOKS_DATA_LOADER) {
             books_list = (ArrayList<Book>) data;
 //            no_internet_text_view.setText(R.string.change_order_zero);
             processLoader();
@@ -270,21 +249,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     swipeContainer.setRefreshing(false);
                 }
             });
-        }
-        else if (loader.getId() == OFFLINE_BOOKS_DATA_LOADER)
-        {
+        } else if (loader.getId() == OFFLINE_BOOKS_DATA_LOADER) {
             Cursor mCursor = (Cursor) data;
             books_list = new ArrayList<Book>();
             booksOffline = new SparseArray<Book>();
-            for(int i = 0; i < mCursor.getCount(); i++)
-            {
+            for (int i = 0; i < mCursor.getCount(); i++) {
                 mCursor.moveToPosition(i);
                 Book k = new Book(mCursor);
-                booksOffline.append((int)k.getId(),k);
+                booksOffline.append((int) k.getId(), k);
                 books_list.add(k);
             }
             processLoader();
-            if(!onlineLoaderCalledOnce) {
+            if (!onlineLoaderCalledOnce) {
                 onlineLoaderCalledOnce = true;
                 loadFromApi();
             }
@@ -292,10 +268,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
 
-    private void processLoader()
-    {
-        if (mAdapter!=null)
-               mAdapter.setBooksData(books_list);
+    private void processLoader() {
+        if (mAdapter != null)
+            mAdapter.setBooksData(books_list);
     }
 
     @Override
@@ -328,8 +303,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             try {
                 String jsonBooksResponse = RequestUtils
-                        .getResponseFromHttpUrl(bookRequestUrl,BBID.getId()+"");
-                JsonUtils.getChapterFromJson(act,jsonBooksResponse,BBID);
+                        .getResponseFromHttpUrl(bookRequestUrl, BBID.getId() + "");
+                JsonUtils.getChapterFromJson(act, jsonBooksResponse, BBID);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -349,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     swipeContainer.setRefreshing(false);
                 }
             });
-            openBook(act,books_list.get(bookPos));
+            openBook(act, books_list.get(bookPos));
         }
     }
 }

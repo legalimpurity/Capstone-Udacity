@@ -13,6 +13,17 @@ import com.vakilapp.lawbooks.provider.DBContract;
 
 public class Chapter implements Parcelable {
 
+    public static final Creator<Chapter> CREATOR = new Creator<Chapter>() {
+        @Override
+        public Chapter createFromParcel(Parcel source) {
+            return new Chapter(source);
+        }
+
+        @Override
+        public Chapter[] newArray(int size) {
+            return new Chapter[size];
+        }
+    };
     private long id;
     private String chapterName;
     private String content;
@@ -23,6 +34,20 @@ public class Chapter implements Parcelable {
         this.book_id = book_id;
         this.chapterName = chapterName;
         this.content = content;
+    }
+
+    public Chapter(Cursor mCursor) {
+        this.id = mCursor.getLong(DBContract.CHAPTER_PROJECTION_INDEXES.TABLE_CHAPTER_COLUMN_ID);
+        this.book_id = mCursor.getLong(DBContract.CHAPTER_PROJECTION_INDEXES.TABLE_BOOK_CHAPTER_COLUMN_ID);
+        this.chapterName = mCursor.getString(DBContract.CHAPTER_PROJECTION_INDEXES.TABLE_CHAPTER_COLUMN_CHAPTER_NAME_STRING);
+        this.content = mCursor.getString(DBContract.CHAPTER_PROJECTION_INDEXES.TABLE_CHAPTER_COLUMN_CHAPTER_CONTENT_STRING);
+    }
+
+    protected Chapter(Parcel in) {
+        this.id = in.readLong();
+        this.chapterName = in.readString();
+        this.content = in.readString();
+        this.book_id = in.readLong();
     }
 
     public long getBook_id() {
@@ -57,7 +82,6 @@ public class Chapter implements Parcelable {
         this.content = content;
     }
 
-
     public ContentValues getContentValues() {
         ContentValues bookObjectValues = new ContentValues();
         bookObjectValues.put(DBContract.Chapters.TABLE_CHAPTER_COLUMN_ID, id);
@@ -65,13 +89,6 @@ public class Chapter implements Parcelable {
         bookObjectValues.put(DBContract.Chapters.TABLE_CHAPTER_COLUMN_CHAPTER_NAME_STRING, chapterName);
         bookObjectValues.put(DBContract.Chapters.TABLE_CHAPTER_COLUMN_CHAPTER_CONTENT_STRING, content);
         return bookObjectValues;
-    }
-
-    public Chapter(Cursor mCursor) {
-        this.id = mCursor.getLong(DBContract.CHAPTER_PROJECTION_INDEXES.TABLE_CHAPTER_COLUMN_ID);
-        this.book_id = mCursor.getLong(DBContract.CHAPTER_PROJECTION_INDEXES.TABLE_BOOK_CHAPTER_COLUMN_ID);
-        this.chapterName = mCursor.getString(DBContract.CHAPTER_PROJECTION_INDEXES.TABLE_CHAPTER_COLUMN_CHAPTER_NAME_STRING);
-        this.content = mCursor.getString(DBContract.CHAPTER_PROJECTION_INDEXES.TABLE_CHAPTER_COLUMN_CHAPTER_CONTENT_STRING);
     }
 
     @Override
@@ -86,23 +103,4 @@ public class Chapter implements Parcelable {
         dest.writeString(this.content);
         dest.writeLong(this.book_id);
     }
-
-    protected Chapter(Parcel in) {
-        this.id = in.readLong();
-        this.chapterName = in.readString();
-        this.content = in.readString();
-        this.book_id = in.readLong();
-    }
-
-    public static final Creator<Chapter> CREATOR = new Creator<Chapter>() {
-        @Override
-        public Chapter createFromParcel(Parcel source) {
-            return new Chapter(source);
-        }
-
-        @Override
-        public Chapter[] newArray(int size) {
-            return new Chapter[size];
-        }
-    };
 }

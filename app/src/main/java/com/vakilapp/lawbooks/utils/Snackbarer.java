@@ -15,45 +15,39 @@ import com.vakilapp.lawbooks.R;
 public class Snackbarer {
 
     // Toast Functions
-    public static void showError(Context _ctx)
-    {
+    public static void showError(Context _ctx) {
         showMsg(_ctx, _ctx.getResources().getString(R.string.generic_error));
     }
 
-    public static void showNetworkError(Context _ctx)
-    {
+    public static void showNetworkError(Context _ctx) {
         showMsg(_ctx, _ctx.getResources().getString(R.string.network_error));
     }
 
-    public static void showMsg(Context _ctx, String _msg)
-    {
-        Toast.makeText(_ctx,_msg, Toast.LENGTH_LONG).show();
+    public static void showMsg(Context _ctx, String _msg) {
+        Toast.makeText(_ctx, _msg, Toast.LENGTH_LONG).show();
     }
 
-    public static void showMsg(Context _ctx, int _msg)
-    {
-        Toast.makeText(_ctx,_msg, Toast.LENGTH_LONG).show();
+    public static void showMsg(Context _ctx, int _msg) {
+        Toast.makeText(_ctx, _msg, Toast.LENGTH_LONG).show();
     }
 
     // SnackBar Functions
 
     public static void showMsg(ViewGroup root, int id) {
-        Snackbar.make(root,id, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(root, id, Snackbar.LENGTH_LONG).show();
     }
 
-    public static void showError(ViewGroup root)
-    {
+    public static void showError(ViewGroup root) {
         Snackbar.make(root, R.string.generic_error, Snackbar.LENGTH_LONG).show();
     }
 
-    public static void showNetworkError(ViewGroup root)
-    {
+    public static void showNetworkError(ViewGroup root) {
         Snackbar.make(root, R.string.network_error, Snackbar.LENGTH_LONG).show();
     }
 
 
     public static void showMsg(ViewGroup root, String id) {
-        Snackbar.make(root,id, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(root, id, Snackbar.LENGTH_LONG).show();
     }
 
     public static void showMsg(ViewGroup root, String id, int actionString, final SnackbarerInterface action) {
