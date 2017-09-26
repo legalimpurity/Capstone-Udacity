@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.vakilapp.lawbooks.R;
 import com.vakilapp.lawbooks.models.Book;
 import com.vakilapp.lawbooks.models.Chapter;
+import com.vakilapp.lawbooks.widget.ChapterWidgetService;
 
 import java.util.ArrayList;
 
@@ -47,12 +48,13 @@ public class ChapterDetailActivity extends AppCompatActivity {
         setAdapter();
         processFlow(this);
 
+        final AppCompatActivity act = this;
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                ChapterWidgetService.startActionUpdateRecipeWidgets(act, chapters_list.get(selectedPos));
+                Snackbar.make(view, R.string.widget_check, Snackbar.LENGTH_LONG).show();
             }
         });
 
