@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -27,12 +28,15 @@ import com.vakilapp.lawbooks.R;
 import com.vakilapp.lawbooks.adapters.BooksAdapter;
 import com.vakilapp.lawbooks.interfaces.BookClickListener;
 import com.vakilapp.lawbooks.loaders.BooksOnlineLoader;
-import com.vakilapp.lawbooks.loaders.ChaptersOnlineLoader;
 import com.vakilapp.lawbooks.models.Book;
 import com.vakilapp.lawbooks.provider.DBContract;
+import com.vakilapp.lawbooks.utils.JsonUtils;
 import com.vakilapp.lawbooks.utils.NetworkUtils;
+import com.vakilapp.lawbooks.utils.RequestUtils;
 import com.vakilapp.lawbooks.utils.Snackbarer;
+import com.vakilapp.lawbooks.utils.UrlUtils;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -45,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int ONLINE_BOOKS_DATA_LOADER = 22;
     private static final int OFFLINE_BOOKS_DATA_LOADER = 23;
 
-    private static final int ONLINE_CHAPTERS_DATA_LOADER = 24;
 
     private boolean onlineLoaderCalledOnce = false;
     private ArrayList<Book> books_list;
@@ -208,11 +211,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, book.getName()+"");
                     bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "book");
                     mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-
-                    Bundle queryBundle = new Bundle();
-                    queryBundle.putParcelable(ChaptersOnlineLoader.BBID_PARAM_BOOK_OBJ,book);
-                    queryBundle.putInt(ChaptersOnlineLoader.BBID_PARAM_BOOK_INDEX,bookPos);
-                    startLoader(ONLINE_CHAPTERS_DATA_LOADER,queryBundle);
+                    ChaptersDownloadAsyncTask runnerc = new ChaptersDownloadAsyncTask();
+                    runnerc.setBookAndContext(book,act,bookPos);
+                    runnerc.execute();
                 }
             }
 
@@ -246,9 +247,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             case ONLINE_BOOKS_DATA_LOADER:
                 loader = new BooksOnlineLoader(this, args);
                 break;
-            case ONLINE_CHAPTERS_DATA_LOADER:
-                loader = new ChaptersOnlineLoader(this, args);
-                break;
             case OFFLINE_BOOKS_DATA_LOADER:
                 loader = new CursorLoader(this, DBContract.Books.CONTENT_URI, DBContract.BOOK_PROJECTION, null, null, null);
                 break;
@@ -272,20 +270,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     swipeContainer.setRefreshing(false);
                 }
             });
-        }
-        else if(loader.getId() == ONLINE_CHAPTERS_DATA_LOADER)
-        {
-            int bookPos = (int) data;
-            // Automatically done by cursor loader
-//            books_list.get(bookPos).setDownloaded(1);
-//            processLoader();
-            swipeContainer.post(new Runnable() {
-                @Override
-                public void run() {
-                    swipeContainer.setRefreshing(false);
-                }
-            });
-            openBook(this,books_list.get(bookPos));
         }
         else if (loader.getId() == OFFLINE_BOOKS_DATA_LOADER)
         {
@@ -322,5 +306,50 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onRefresh() {
         loadFromApi();
+    }
+
+
+    private class ChaptersDownloadAsyncTask extends AsyncTask<Object, Object, Void> {
+
+        Book BBID;
+        Activity act;
+        int bookPos;
+
+        public void setBookAndContext(Book bar, Activity act, int bookPos) {
+            this.BBID = bar;
+            this.act = act;
+            this.bookPos = bookPos;
+        }
+
+        @Override
+        protected Void doInBackground(Object... params) {
+
+            URL bookRequestUrl = UrlUtils.buildBookListUrl();
+
+            try {
+                String jsonBooksResponse = RequestUtils
+                        .getResponseFromHttpUrl(bookRequestUrl,BBID.getId()+"");
+                JsonUtils.getChapterFromJson(act,jsonBooksResponse,BBID);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Object... sttus) {
+            // Automatically done by cursor loader
+//            books_list.get(bookPos).setDownloaded(1);
+//            processLoader();
+            swipeContainer.post(new Runnable() {
+                @Override
+                public void run() {
+                    swipeContainer.setRefreshing(false);
+                }
+            });
+            openBook(act,books_list.get(bookPos));
+        }
     }
 }
