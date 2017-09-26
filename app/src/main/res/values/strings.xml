@@ -206,6 +206,7 @@
     <string name="appwidget_placeholder_text">Set chapter content on this widget by clicking the widget button on the chapter.</string>
     <string name="appwidget_text">Last Recipe Opened : %s</string>
     <string name="widget_check">Now check your widget on the home screen.</string>
+    <string name="banner_ad_unit_id">ca-app-pub-8028145875824365/4880744792</string>
 
 
 </resources>

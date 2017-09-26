@@ -20,6 +20,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.vakilapp.lawbooks.R;
 import com.vakilapp.lawbooks.adapters.BooksAdapter;
 import com.vakilapp.lawbooks.interfaces.BookClickListener;
@@ -48,12 +51,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private ArrayList<Book> books_list;
     private SparseArray<Book> booksOffline = new SparseArray<Book>();
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @BindView(R.id.my_recycler)
     RecyclerView myRecycler;
     @BindView(R.id.swipeContainer)
     SwipeRefreshLayout swipeContainer;
     @BindView(R.id.activity_main_root)
     CoordinatorLayout activityMainRoot;
+    @BindView(R.id.adView)
+    AdView mAdView;
 
     private BooksAdapter mAdapter;
     @Override
@@ -65,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         swipeContainer.setOnRefreshListener(this);
         setAdapter(this);
         checkForSavedInstanceState(savedInstanceState);
+
+        addNAnalytics();
     }
 
     @Override
@@ -94,6 +103,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         outState.putParcelableArrayList(SAVED_INSTANCE_BOOKS_LIST, books_list);
     }
 
+    private void addNAnalytics()
+    {
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+    }
     private void checkForSavedInstanceState(Bundle savedInstanceState)
     {
         if (savedInstanceState != null) {
@@ -187,6 +203,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     openBook(act,book);
                 }
                 else if (book.getDownloaded() == 0 || book.getDownloaded() == 2) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, book.getId()+"");
+                    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, book.getName()+"");
+                    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "book");
+                    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
                     Bundle queryBundle = new Bundle();
                     queryBundle.putParcelable(ChaptersOnlineLoader.BBID_PARAM_BOOK_OBJ,book);
                     queryBundle.putInt(ChaptersOnlineLoader.BBID_PARAM_BOOK_INDEX,bookPos);
