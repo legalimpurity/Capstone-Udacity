@@ -202,6 +202,7 @@
     <string name="title_activity_chapter_detail">ChapterDetailActivity</string>
 
     <string name="description_of_root_recycler">List of LawBooks you can read through</string>
+    <string name="description_of_FAB_widget">This button allows you to add a widget of the chapter\'s content on your HomeScreen.</string>
     <string name="add_widget">Add widget</string>
     <string name="appwidget_placeholder_text">Set chapter content on this widget by clicking the widget button on the chapter.</string>
     <string name="appwidget_text">Last Recipe Opened : %s</string>
